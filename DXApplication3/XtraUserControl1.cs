@@ -152,12 +152,13 @@ namespace DXApplication3
 
         }
 
+        string str;
         private void gridControl1_Click(object sender, EventArgs e)
         {
             gridControl1.Controls.Clear();
             var result = loginEx.objectes("", 1);
-            string str = "";
-            for (int i = 0; i < xtraUserControl2.filteer.Length; i++)
+            
+            for (int i = 0; i < xtraUserControl2.filteer.Length; i++)// сделать через join
             {
                 str = xtraUserControl2.filteer[i].Trim();
             }
