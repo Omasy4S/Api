@@ -1,29 +1,34 @@
-﻿using DevExpress.XtraEditors;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DXApplication3
 {
+    
     public partial class XtraUserControl1 : DevExpress.XtraEditors.XtraUserControl
     {
         XtraUserControl2 xtraUserControl2 = new XtraUserControl2();
+        
+        private const string KEY = "eVCX2lzO7prHREze1TY2wglCAaHg7eHUNqJYUMi5Ps8zbzpLNLKqvKyenU5v6pPfMj35PG==";
+        WebClient webs = new WebClient();
         LoginEx loginEx = new LoginEx();
+        List<Button> button = new List<Button>();
         int page = 0;
         int currectpage;
-        List<Button> button = new List<Button>();
+        List<LoginEx.ObjectStruct> result;
+
         public XtraUserControl1()
         {
             InitializeComponent();
-            var result = loginEx.objectes("", 1);
-           
-            gridControl1.DataSource = result;            
+            result = loginEx.objectes("", 1);
+
+            Data();
 
             gridView1.Columns[0].Caption = "Адрес";
             gridView1.Columns[1].Caption = "Тип объекта";
@@ -32,7 +37,7 @@ namespace DXApplication3
             gridView1.Columns[4].Caption = "Дата создания";
             gridView1.Columns[5].Caption = "Потребитель";
             gridView1.Columns[6].Caption = "Мнемосхема";
-            
+
         }
 
         private void XtraUserControl1_Load(object sender, EventArgs e)
@@ -100,11 +105,11 @@ namespace DXApplication3
                 currectpage = Convert.ToInt32(buttontest.Text);
             }
 
-            var result = loginEx.objectes("", currectpage);
+            result = loginEx.objectes("", currectpage);
 
             if (currectpage == loginEx.numberOfPages)
             {
-                gridControl1.DataSource = result;
+                Data();
             }
             else
             {
@@ -117,10 +122,10 @@ namespace DXApplication3
                         button[i].Text = (i + page + page).ToString();
 
                     }
-                    gridControl1.DataSource = result;
+                    Data();
 
                 }
-                gridControl1.DataSource = result;
+                Data();
             }
 
 
@@ -147,33 +152,63 @@ namespace DXApplication3
 
             await Task.Delay(3000);
 
-            var result = loginEx.objectes(search, 0);
-            gridControl1.DataSource = result;
+            result = loginEx.objectes(search, 0);
+            Data();
 
-        }
-
-        string str;
-        private void gridControl1_Click(object sender, EventArgs e)
-        {
-            gridControl1.Controls.Clear();
-            var result = loginEx.objectes("", 1);
-            
-            for (int i = 0; i < xtraUserControl2.filteer.Length; i++)// сделать через join
-            {
-                str = xtraUserControl2.filteer[i].Trim();
-            }
-            
-            gridControl1.DataSource = result.Where(x => x.typeObject == str);
         }
 
         private void textBox1_Click(object sender, EventArgs e)
         {
-
             gridControl1.Controls.Add(xtraUserControl2);
             xtraUserControl2.Location = new Point(400, 50);
-            
         }
 
-        
-    } 
+        public string organizations;
+        public string typeobject;
+        public string modeObjects;
+        public string TagsObject;
+        public string TagsModem;
+        public string TagsDevice;
+        public string TagsTV;
+        public string Owners;
+        public string Source;
+        public string Education;
+        public string inspector;
+        public string inspectionArea;
+        public void FilterAPI()
+        {
+            string objects = "https://api.eldis24.ru/api/v1/objects/list";
+            webs.Headers.Add(HttpRequestHeader.Cookie, $"access_token={loginEx.Login(loginEx.login, loginEx.password)}");
+            webs.Headers.Add("key", KEY);
+            webs.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded; charset=utf-8");
+            var response = JObject.Parse(webs.UploadString($"{objects}", $"filter.org.id={organizations}&filter.type.id={typeobject}&filter.mode.id={modeObjects}&filter.tag.id={TagsObject}&filter.tagModem.id={TagsModem}&filter.tag={TagsDevice}&filter.tagTV.id={TagsTV}&filter.payer.id={Owners}&filter.sourceTV.id={Source}&filter.addressLevel.id={Education}&filter.inspector.id={inspector}&filter.inspectionArea.id={inspectionArea}"));
+
+            var result = (object)response["response"]["objects"]["list"].Select(x => new LoginEx.ObjectStruct
+            {
+                address = (string)x["address"],
+                typeObject = (string)x["typeObject"]["name"],
+                name = (string)x["name"],
+                consumer = (string)x["consumer"],
+                createdOn = TOdateTime((long)x["createdOn"]),
+                description = (string)x["description"],
+                dashboardName = (string)x["dashboardName"],
+
+            }).ToList();
+            
+            Data();
+
+
+        }
+        private DateTime TOdateTime(long createdOn)
+        {
+            var data = new DateTime(621355968230000000);
+            return data.AddSeconds(createdOn);
+        }
+        private void Data()
+        {
+            
+            this.gridControl1.DataSource = result;
+        }
+    }
+
 }

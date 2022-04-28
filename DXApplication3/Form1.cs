@@ -99,11 +99,10 @@ namespace DXApplication3
                 dashboardName = (string)x["dashboardName"],
 
             }).ToList();
-            currentpage = (int)response["response"]["objects"]["pagination"]["currentPage"];
-            numberOfPages = (int)response["response"]["objects"]["pagination"]["numberOfPages"];
+                currentpage = (int)response["response"]["objects"]["pagination"]["currentPage"];
+                numberOfPages = (int)response["response"]["objects"]["pagination"]["numberOfPages"];
+          
 
-           
-            
             return (List<ObjectStruct>)result;
 
         }
@@ -115,6 +114,7 @@ namespace DXApplication3
         }
         public class ObjectStruct
         {
+
             public string address { get; set; }
             public string typeObject { get; set; }
             public string name { get; set; }
