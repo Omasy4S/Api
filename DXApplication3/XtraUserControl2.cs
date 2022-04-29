@@ -9,14 +9,21 @@ namespace DXApplication3
 
     public partial class XtraUserControl2 : DevExpress.XtraEditors.XtraUserControl
     {
+
         private const string filterr = "https://api.eldis24.ru/api/v1/search/";
         private const string KEY = "eVCX2lzO7prHREze1TY2wglCAaHg7eHUNqJYUMi5Ps8zbzpLNLKqvKyenU5v6pPfMj35PG==";
         LoginEx loginEx = new LoginEx();
         WebClient webs = new WebClient();
-        public XtraUserControl2()
+
+        XtraUserControl1 usercontrol;
+
+        public XtraUserControl2(XtraUserControl1 control)
         {
 
             InitializeComponent();
+            usercontrol = control;
+
+            
 
             checkedComboBoxEdit1.Size = new System.Drawing.Size(300, 300);
             checkedComboBoxEdit2.Size = new System.Drawing.Size(300, 300);
@@ -34,6 +41,7 @@ namespace DXApplication3
 
             webs.Headers.Add(HttpRequestHeader.Cookie, $"access_token={loginEx.Login(loginEx.login, loginEx.password)}");
             webs.Headers.Add("key", KEY);
+
         }
 
 
@@ -292,18 +300,18 @@ namespace DXApplication3
         }
 
 
-        string organizations;
-        string typeobject;
-        string modeObjects;
-        string TagsObject;
-        string TagsModem;
-        string TagsDevice;
-        string TagsTV;
-        string Owners;
-        string Source;
-        string Education;
-        string inspector;
-        string inspectionArea;
+        public static string organizations;
+        public static string typeobject;
+        public static string modeObjects;
+        public static string TagsObject;
+        public static string TagsModem;
+        public static string TagsDevice;
+        public static string TagsTV;
+        public static string Owners;
+        public static string Source;
+        public static string Education;
+        public static string inspector;
+        public static string inspectionArea;
 
         private void checkedComboBoxEdit1_Properties_Closed(object sender, DevExpress.XtraEditors.Controls.ClosedEventArgs e)
         {
@@ -417,23 +425,13 @@ namespace DXApplication3
         
         private void simpleButton1_Click(object sender, EventArgs e)
         {
-            XtraUserControl1 xtraUserControl1 = new XtraUserControl1();
-            xtraUserControl1.organizations = organizations;
-            xtraUserControl1.typeobject = typeobject;
-            xtraUserControl1.modeObjects = modeObjects;
-            xtraUserControl1.TagsObject = TagsObject;
-            xtraUserControl1.TagsModem = TagsModem;
-            xtraUserControl1.TagsDevice = TagsDevice;
-            xtraUserControl1.TagsTV = TagsTV;
-            xtraUserControl1.Owners = Owners;
-            xtraUserControl1.Source = Source;
-            xtraUserControl1.Education = Education;
-            xtraUserControl1.inspector = inspector;
-            xtraUserControl1.inspectionArea = inspectionArea;
+            usercontrol.FilterAPI();
 
-            xtraUserControl1.FilterAPI();
             this.Dispose();
 
         }
+
     }
+
+
 }

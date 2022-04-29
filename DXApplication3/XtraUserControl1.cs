@@ -10,10 +10,9 @@ using System.Windows.Forms;
 
 namespace DXApplication3
 {
-    
+
     public partial class XtraUserControl1 : DevExpress.XtraEditors.XtraUserControl
     {
-        XtraUserControl2 xtraUserControl2 = new XtraUserControl2();
         
         private const string KEY = "eVCX2lzO7prHREze1TY2wglCAaHg7eHUNqJYUMi5Ps8zbzpLNLKqvKyenU5v6pPfMj35PG==";
         WebClient webs = new WebClient();
@@ -37,6 +36,7 @@ namespace DXApplication3
             gridView1.Columns[4].Caption = "Дата создания";
             gridView1.Columns[5].Caption = "Потребитель";
             gridView1.Columns[6].Caption = "Мнемосхема";
+
 
         }
 
@@ -148,6 +148,7 @@ namespace DXApplication3
         }
         private async void textBox1_TextChanged(object sender, EventArgs e)
         {
+
             var search = textBox1.Text;
 
             await Task.Delay(3000);
@@ -159,31 +160,19 @@ namespace DXApplication3
 
         private void textBox1_Click(object sender, EventArgs e)
         {
+            XtraUserControl2 xtraUserControl2 = new XtraUserControl2(this);
             gridControl1.Controls.Add(xtraUserControl2);
             xtraUserControl2.Location = new Point(400, 50);
         }
 
-        public string organizations;
-        public string typeobject;
-        public string modeObjects;
-        public string TagsObject;
-        public string TagsModem;
-        public string TagsDevice;
-        public string TagsTV;
-        public string Owners;
-        public string Source;
-        public string Education;
-        public string inspector;
-        public string inspectionArea;
         public void FilterAPI()
         {
             string objects = "https://api.eldis24.ru/api/v1/objects/list";
             webs.Headers.Add(HttpRequestHeader.Cookie, $"access_token={loginEx.Login(loginEx.login, loginEx.password)}");
             webs.Headers.Add("key", KEY);
             webs.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded; charset=utf-8");
-            var response = JObject.Parse(webs.UploadString($"{objects}", $"filter.org.id={organizations}&filter.type.id={typeobject}&filter.mode.id={modeObjects}&filter.tag.id={TagsObject}&filter.tagModem.id={TagsModem}&filter.tag={TagsDevice}&filter.tagTV.id={TagsTV}&filter.payer.id={Owners}&filter.sourceTV.id={Source}&filter.addressLevel.id={Education}&filter.inspector.id={inspector}&filter.inspectionArea.id={inspectionArea}"));
-
-            var result = (object)response["response"]["objects"]["list"].Select(x => new LoginEx.ObjectStruct
+            var response = JObject.Parse(webs.UploadString($"{objects}", $"filter.org.id={XtraUserControl2.organizations}&filter.type.id={XtraUserControl2.typeobject}&filter.mode.id={XtraUserControl2.modeObjects}&filter.tag.id={XtraUserControl2.TagsObject}&filter.tagModem.id={XtraUserControl2.TagsModem}&filter.tag={XtraUserControl2.TagsDevice}&filter.tagTV.id={XtraUserControl2.TagsTV}&filter.payer.id={XtraUserControl2.Owners}&filter.sourceTV.id={XtraUserControl2.Source}&filter.addressLevel.id={XtraUserControl2.Education}&filter.inspector.id={XtraUserControl2.inspector}&filter.inspectionArea.id={XtraUserControl2.inspectionArea}"));
+            var result = (object)response["response"]["objects"]["list"].Select(x => new 
             {
                 address = (string)x["address"],
                 typeObject = (string)x["typeObject"]["name"],
@@ -194,8 +183,9 @@ namespace DXApplication3
                 dashboardName = (string)x["dashboardName"],
 
             }).ToList();
-            
-            Data();
+
+            gridControl1.DataSource = result;
+
 
 
         }
@@ -206,9 +196,9 @@ namespace DXApplication3
         }
         private void Data()
         {
-            
+
             this.gridControl1.DataSource = result;
         }
-    }
 
+    }
 }

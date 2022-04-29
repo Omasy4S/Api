@@ -16,6 +16,7 @@ namespace DXApplication3
     public partial class Form1 : DevExpress.XtraBars.FluentDesignSystem.FluentDesignForm
     {
         XtraUserControl1 xtraUserControl1 = new XtraUserControl1();
+
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +30,7 @@ namespace DXApplication3
 
         private void accordionControlElement3_Click(object sender, EventArgs e)
         {
+            
             fluentDesignFormContainer1.Controls.Clear();
             fluentDesignFormContainer1.Controls.Add(xtraUserControl1);
 
